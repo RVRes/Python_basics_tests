@@ -1,10 +1,12 @@
+import os.path
 from random import randint, choice
 
 import requests
 
 
 def create_file_with_some_roman_numbers(filename: str, words: int):
-    with open(f'{filename}', 'w', encoding='utf-8') as F:
+    path = r'../support/'
+    with open(os.path.join(path, filename), 'w', encoding='utf-8') as F:
         letters = ['M', 'CM', 'D', 'CD', 'C', 'XC', 'L', 'XL', 'X', 'IX', 'V', 'IV', 'I', 'Z', 'A', 'O', 'K']
         for i in range(words):
             word = ''.join([choice(letters) for _ in range(randint(1, 7))])
@@ -38,5 +40,5 @@ def count_words_in_file(filename: str):
     print(r3.text)
 
 
-# create_file_with_some_roman_numbers('text_with_some_roman_numbers_utf-8.txt', 10000)
-count_words_in_file('text_with_some_roman_numbers_utf-8.txt')
+# create_file_with_some_roman_numbers('text_with_some_roman_numbers_utf-8_1.txt', 10000)
+# count_words_in_file('text_with_some_roman_numbers_utf-8.txt')
