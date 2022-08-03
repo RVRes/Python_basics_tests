@@ -16,17 +16,18 @@ def create_file_with_some_roman_numbers(filename: str, words: int):
                 F.write('\n')
 
 
-def count_words_in_file(filename: str):
+def count_roman_nums_in_file(filename: str):
     count = count_roman = sum_ = 0
     url = 'http://127.0.0.1:8005/is_roman_number/'
     url2 = 'http://127.0.0.1:8005/roman_to_integer/'
     url3 = 'http://127.0.0.1:8005/check_answer/'
-    with open(f'{filename}', 'r', encoding='utf-8') as F:
-        s = (word for line in F for word in line.strip().split())
-        for item in s:
-            r = requests.get(url, params={'roman_number': item})
+    path = r'../support/'
+    with open(os.path.join(path, filename), 'r', encoding='utf-8') as F:
+        word = (word for line in F for word in line.strip().split())
+        for item in word:
+            r = requests.get(url, params={'roman_number': item})  # check if word is roman number
             if r.text == 'true':
-                r2 = requests.get(url2, params={'roman_number': item})
+                r2 = requests.get(url2, params={'roman_number': item})  # convert roman number to arabic
                 response = r2.json()[item]
                 sum_ += response
                 count_roman += 1
@@ -36,9 +37,9 @@ def count_words_in_file(filename: str):
                 print('=', end=' ')
     print()
     print(f'Total: {count}, Roman: {count_roman}, Sum: {sum_}, Answer: {sum_ * count_roman}')
-    r3 = requests.get(url3, params={'section': 5, 'task': 1, 'answer': sum_ * count_roman})
+    r3 = requests.get(url3, params={'section': 5, 'task': 1, 'answer': sum_ * count_roman})  # validate answer
     print(r3.text)
 
 
 # create_file_with_some_roman_numbers('text_with_some_roman_numbers_utf-8_1.txt', 10000)
-# count_words_in_file('text_with_some_roman_numbers_utf-8.txt')
+# count_roman_nums_in_file('text_with_some_roman_numbers_utf-8.txt')
