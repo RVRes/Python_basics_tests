@@ -1,6 +1,7 @@
 from random import randint, choice
 from getpass import getpass
 
+
 def user_input() -> tuple:
     first_len = tuple(map(int, input('Длина первого числа (от до): ').split()))
     if len(first_len) == 1:
@@ -33,40 +34,68 @@ def get_expression(n1_len: tuple, n2_len: tuple, signs: str) -> tuple:
 
     sign = choice(signs)
     if sign == '/':
-        result_len = (max(n1_len[0]-n2_len[0], 1), max(n1_len[1]-n2_len[1], n1_len[0]-n2_len[0], 1))
+        result_len = (max(n1_len[0] - n2_len[0], 1), max(n1_len[1] - n2_len[1], n1_len[0] - n2_len[0], 1))
         n1 = n2 = None
-        while not n1 or not(n1_len[0] <= len(str(n1 * n2)) <= n1_len[1]):
+        while not n1 or not (n1_len[0] <= len(str(n1 * n2)) <= n1_len[1]):
             n1 = get_random(result_len)
             n2 = get_random(n2_len)
         n1 = n1 * n2
     else:
         n1, n2 = get_random(n1_len), get_random(n2_len)
     if sign == '-':
-        while n2>n1:
+        while n2 > n1:
             n1, n2 = get_random(n1_len), get_random(n2_len)
     return n1, n2, sign, solve(n1, n2, sign)
 
 
 def create_test(n1_len, n2_len, sign, columns, raws):
-    return [[get_expression(n1_len, n2_len, sign) for _ in range(columns)] for _ in range(raws)]
+    test_ = []
+    for _ in range(raws):
+        line = []
+        for _ in range(columns):
+            for _ in range(10000):
+                expression = get_expression(n1_len, n2_len, sign)
+                if all(expression not in line_ for line_ in test_) and expression not in line:
+                    line.append(expression)
+                    break
+            else:
+                if line:
+                    test_.append(line)
+                return test_
+        test_.append(line)
+    return test_
 
 
-def print_test(data, need_answers = False) -> None:
+def render_test(data, need_answers=False) -> str:
     def get_max_len(data, item_num):
         return max(len(str(value[item_num])) for raw in data for value in raw)
 
     n1_len = get_max_len(data, 0)
     n2_len = get_max_len(data, 1)
     answ_len = get_max_len(data, 3)
+    output = ''
     for raw in data:
         for n1, n2, sign, answer in raw:
-            print(f'{n1:{n1_len}} {sign} {n2:{n2_len}} = {answer if need_answers else "":{answ_len}}', end=' '*7)
-        print()
+            output += f'{n1:{n1_len}} {sign} {n2:{n2_len}} = {answer if need_answers else "":{answ_len}}' + ' ' * 7
+        output += '\n'
+    return output
+
+
+def print_test(data, need_answers=False) -> None:
+    output = render_test(data, need_answers)
+    print(output)
+
+
+def write_test_to_file(data, need_answers=False) -> None:
+    tests_file = 'math_1_grade_answers.txt'
+    output = render_test(data, need_answers)
+    with open(tests_file, 'w') as file:
+        file.write(output)
+
 
 # settings = ((3, 3), (1, 3), '+-*/', 4, 10)
 settings = user_input()
 test = create_test(*settings)
 print_test(test)
 if input('Нужны ответы? (y / n): ') in ['y', 'Y', 'д', 'Д']:
-    print_test(test, need_answers=True)
-
+    write_test_to_file(test, need_answers=True)
