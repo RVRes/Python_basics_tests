@@ -67,16 +67,16 @@ def create_test(n1_len, n2_len, sign, columns, raws):
 
 
 def render_test(data, need_answers=False) -> str:
-    def get_max_len(data, item_num):
-        return max(len(str(value[item_num])) for raw in data for value in raw)
+    def get_max_len(data_, item_num):
+        return max(len(str(value[item_num])) for row_ in data_ for value in row_)
 
     n1_len = get_max_len(data, 0)
     n2_len = get_max_len(data, 1)
-    answ_len = get_max_len(data, 3)
+    answer_len = get_max_len(data, 3)
     output = ''
     for raw in data:
         for n1, n2, sign, answer in raw:
-            output += f'{n1:{n1_len}} {sign} {n2:{n2_len}} = {answer if need_answers else "":{answ_len}}' + ' ' * 7
+            output += f'   {n1:{n1_len}} {sign} {n2:{n2_len}} = {answer if need_answers else "":{answer_len}}   '
         output += '\n'
     return output
 
@@ -99,3 +99,6 @@ test = create_test(*settings)
 print_test(test)
 if input('Нужны ответы? (y / n): ') in ['y', 'Y', 'д', 'Д']:
     write_test_to_file(test, need_answers=True)
+while True:
+    if input('Выход? (y / n): ') in ['y', 'Y', 'д', 'Д']:
+        break
